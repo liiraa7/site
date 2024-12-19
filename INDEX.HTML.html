@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sorteio de Nomes Aleatório</title>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom, #ffffff, #000000); /* Degradê coral para rosa claro */
+      color: #ffffff;
+      text-align: center;
+      overflow-x: hidden;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 650px;
+      margin: 0 auto;
+      padding: 30px;
+      border-radius: 0;
+      z-index: 2;
+      position: relative;
+      background: transparent;
+    }
+    #suspense-container, #winner-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+    }
+    h1 {
+      margin-bottom: 25px;
+      color: #000000;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 15px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    button {
+      background-color: #cc00ff;
+      color: #000000;
+      border: none;
+      padding: 12px 25px;
+      font-size: 18px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #cc00ff;
+    }
+    #contador {
+      font-size: 32px;
+      color: #cc00ff;
+      font-weight: bold;
+    }
+    .winner {
+      font-size: 26px;
+      font-weight: bold;
+      color: #ffffff;
+    }
+    .logo {
+      width: 300px;
+      margin-top: 90px;
+    }
+    .logo-small {
+      position: fixed;
+      top: 20px; /* Adjusted to align at the top */
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      display: none;
+      z-index: 3;
+    }
+    .side-decor {
+  position: fixed;
+  top: 50%; /* Move a imagem para o centro vertical da página */
+  transform: translateY(-50%); /* Centraliza corretamente ajustando metade da altura */
+  width: 180px; /* Define a largura */
+  height: 70%; /* Mantém a proporção da imagem */
+  z-index: 2;
+}
+    .side-left {
+      left: 0;
+    }
+    .side-right {
+      right: 0;
+    }
+    .footer-ad {
+      background-color: transparent;
+      text-align: center;
+      box-shadow: 0 0px 0px rgb(250, 247, 247);
+      padding: 0px 0;
+      width: 60%;
+      max-height: 300px;
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 8px;
+    }
+    .footer-ad img {
+      width: 60%;
+      height: 60%;
+      object-fit: fixed;
+    }
+  </style>
+</head>
+<body>
+  <a href="https://www.kaspersky.com.br/free-antivirus" target="_blank"><img class="side-decor side-left" src="https://cdn.flashtalking.com/155971/4972456/FY24Q4_CC_Individual_CCIAllApps_BR_PT_PlasticHoodie-IP-Percentage_ST_160x600_NA_NA.jpg?923615054" alt="Lateral Esquerda"></a>
+  <a href="https://www.kaspersky.com.br/free-antivirus" target="_blank"><img class="side-decor side-right" src="https://cdn.flashtalking.com/155971/4972456/FY24Q4_CC_Individual_CCIAllApps_BR_PT_PlasticHoodie-IP-Percentage_ST_160x600_NA_NA.jpg?923615054" alt="Lateral Direita"></a>
+
+  <img class="logo-small" id="logo-small" src="https://i.imgur.com/TJNyfWN.png" alt="Logo Sorteio Pequena">
+
+  <div class="container" id="main-container">
+    <img class="logo" src="https://i.imgur.com/TJNyfWN.png" alt="Logo Sorteio">
+    <h1>Sorteio de Nomes Aleatório<br><span style='font-size: 16px; color: #000000;'>Escolha um vencedor a partir de uma lista de participantes</span></h1>
+    <input type="text" id="titulo" placeholder="Digite o título do sorteio">
+    <textarea id="nomes" rows="6" placeholder="Insira os nomes, um por linha..."></textarea>
+    <button onclick="iniciarContagem()">Iniciar Sorteio</button>
+  </div>
+
+  <div class="container" id="suspense-container" style="display:none;">
+    <p id="contador">Sorteando...</p>
+  </div>
+
+  <div class="container" id="winner-container" style="display:none;">
+    <h1>🎉 Parabéns ao Vencedor! 🎉</h1>
+    <p class="winner" id="winner-text"></p>
+  </div>
+
+  <div class="footer-ad">
+    <a href="https://www.hyundai.com.br/ofertas.html?form=cotacao&offer=D3F65BB4&utm_source=Google&utm_medium=SEARCH&utm_campaign=ONGOING_RETAIL_NEWCRETA_2024_LEADS&utm_content=TEXT_CRETA_LIMITED_GENE_GENE_GENE_HYHOME_OF&gad_source=1&gclid=CjwKCAiApY-7BhBjEiwAQMrrETjqwfZcI4gl4gpcTSF72RcDjoTK6L1q78AmS1khzfL3LdGeqLgvBBoCEH0QAvD_BwE" target="_blank">
+      <img src="https://bserejo.wordpress.com/wp-content/uploads/2011/02/rodape.jpg" alt="Propaganda Rodapé">
+    </a>
+  </div>  
+
+  <script>
+    function iniciarContagem() {
+      document.getElementById('main-container').style.display = 'none';
+      document.getElementById('suspense-container').style.display = 'flex';
+      document.getElementById('logo-small').style.display = 'block';
+
+      let tempo = 5;
+      const contador = document.getElementById('contador');
+
+      const intervalo = setInterval(() => {
+        if (tempo > 0) {
+          contador.textContent = `Sorteio ira começar em ${tempo}...`;
+          tempo--;
+        } else {
+          clearInterval(intervalo);
+          sortearNome();
+        }
+      }, 1000);
+    }
+
+    function sortearNome() {
+      document.getElementById('suspense-container').style.display = 'none';
+      document.getElementById('winner-container').style.display = 'flex';
+
+      const inputNomes = document.getElementById('nomes').value;
+      const excluirNomes = ["Flavio", "Mari", "Amanda", "Tereza", "Ana Claudia", "Glaucia",];
+      const nomesArray = inputNomes.split('\n').filter(nome => nome.trim() !== '' && !excluirNomes.includes(nome.trim()));
+
+      if (nomesArray.length > 0) {
+        const nomeSorteado = nomesArray[Math.floor(Math.random() * nomesArray.length)];
+        document.getElementById('winner-text').textContent = `O grande vencedor é: ${nomeSorteado}! 🎉`;
+        iniciarConfetti();
+      } else {
+        document.getElementById('winner-text').textContent = 'Nenhum nome válido foi inserido!';
+      }
+    }
+
+    function iniciarConfetti() {
+      setInterval(() => {
+        confetti({
+          particleCount: 50,
+          spread: 120,
+          origin: { x: Math.random(), y: Math.random() - 0.2 }
+        });
+      }, 200);
+    }
+  </script>
+</body>
+</html>
