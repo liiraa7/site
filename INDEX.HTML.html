@@ -1,196 +1,1167 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sorteio de Nomes Aleatório</title>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: linear-gradient(to bottom, #ffffff, #000000); /* Degradê coral para rosa claro */
-      color: #ffffff;
-      text-align: center;
-      overflow-x: hidden;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-    .container {
-      max-width: 650px;
-      margin: 0 auto;
-      padding: 30px;
-      border-radius: 0;
-      z-index: 2;
-      position: relative;
-      background: transparent;
-    }
-    #suspense-container, #winner-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      flex: 1;
-    }
-    h1 {
-      margin-bottom: 25px;
-      color: #000000;
-    }
-    input, textarea {
-      width: 100%;
-      padding: 15px;
-      margin-bottom: 20px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 16px;
-    }
-    button {
-      background-color: #cc00ff;
-      color: #000000;
-      border: none;
-      padding: 12px 25px;
-      font-size: 18px;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-    button:hover {
-      background-color: #cc00ff;
-    }
-    #contador {
-      font-size: 32px;
-      color: #cc00ff;
-      font-weight: bold;
-    }
-    .winner {
-      font-size: 26px;
-      font-weight: bold;
-      color: #ffffff;
-    }
-    .logo {
-      width: 300px;
-      margin-top: 90px;
-    }
-    .logo-small {
-      position: fixed;
-      top: 20px; /* Adjusted to align at the top */
-      left: 50%;
-      transform: translateX(-50%);
-      width: 300px;
-      display: none;
-      z-index: 3;
-    }
-    .side-decor {
-  position: fixed;
-  top: 50%; /* Move a imagem para o centro vertical da página */
-  transform: translateY(-50%); /* Centraliza corretamente ajustando metade da altura */
-  width: 180px; /* Define a largura */
-  height: 70%; /* Mantém a proporção da imagem */
-  z-index: 2;
+    :root{
+      --bg1:#0b0b12;
+      --bg2:#0f1020;
+      --card: rgba(255,255,255,.06);
+      --stroke: rgba(255,255,255,.14);
+      --text:#e9e9f5;
+      --muted:#b7b7d6;
+      --accent:#cc00ff;
+      --accent2:#7c3aed;
+      --good:#22c55e;
+      --warn:#f59e0b;
+      --danger:#ef4444;
+      --shadow: 0 24px 70px rgba(0,0,0,.55);
+      --radius: 18px;
+
+      /* ===== FAQ (Acordeão) ===== */
+#faq-card{
+  padding: 20px;
 }
-    .side-left {
-      left: 0;
+
+.faq-title{
+  margin: 4px 0 16px;
+  font-size: clamp(22px, 2.6vw, 40px);
+  font-weight: 1000;
+  letter-spacing: .2px;
+}
+
+.faq{
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.18);
+  border-radius: 16px;
+  overflow: hidden;
+  margin: 12px 0;
+}
+
+.faq-q{
+  width: 100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+  padding: 16px 16px;
+  cursor: pointer;
+  color: var(--text);
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  font-weight: 900;
+  text-align: left;
+}
+
+.faq-q:hover{
+  background: rgba(255,255,255,.04);
+}
+
+.faq-icon{
+  width: 34px;
+  height: 34px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius: 12px;
+  border: 1px solid rgba(204,0,255,.25);
+  background: linear-gradient(180deg, rgba(204,0,255,.12), rgba(255,255,255,.03));
+  box-shadow: 0 10px 35px rgba(0,0,0,.35);
+  font-size: 18px;
+  font-weight: 1000;
+  color: #fff;
+  flex-shrink: 0;
+  transition: transform .18s ease;
+}
+
+.faq-a{
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .25s ease;
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+
+.faq-a > *{
+  margin: 0;
+  padding: 14px 16px 16px;
+  color: rgba(233,233,245,.85);
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.faq-a ol{
+  margin: 0;
+  padding-left: 20px;
+}
+
+.faq.open .faq-a{
+  max-height: 120px; /* suficiente pra respostas longas */
+}
+
+.faq.open .faq-icon{
+  transform: rotate(45deg);
+}
     }
-    .side-right {
-      right: 0;
+
+    *{ box-sizing:border-box; }
+    html, body { height: 100%; }
+
+    body{
+  
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; 
+      margin:0;
+      padding:0;
+      color: var(--text);
+      text-align:center;
+      overflow-x:hidden;
+      overflow-y:auto;
+      min-height:100vh;
+
+  /* Fundo aurora com profundidade */
+  
+  background:
+     radial-gradient(1200px 700px at 20% 10%, rgba(204,0,255,.18), transparent 65%),
+     radial-gradient(1100px 700px at 85% 20%, rgba(124,58,237,.16), transparent 68%),
+     radial-gradient(900px 650px at 55% 95%, rgba(34,197,94,.10), transparent 70%),
+     linear-gradient(180deg, #06060f 0%, #0b0b18 55%, #05050d 100%);
     }
-    .footer-ad {
-      background-color: transparent;
-      text-align: center;
-      box-shadow: 0 0px 0px rgb(250, 247, 247);
-      padding: 0px 0;
-      width: 60%;
-      max-height: 300px;
+
+      body::before{
+         content:"";
+         position:fixed;
+         inset:0;
+         pointer-events:none;
+         background-image:
+     linear-gradient(rgba(255, 5, 213, 0.03) 1px, transparent 1px),
+     linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+         background-size: 46px 46px;
+         opacity: .55;
+         mask-image: radial-gradient(circle at 50% 25%, rgba(0,0,0,1), rgba(0,0,0,.16) 62%, transparent 78%);
+         z-index:0;
+    }
+
+    .container{
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 26px 16px 120px; /* espaço pro footer */
+      position: relative;
+      z-index: 2;
+    }
+
+    .card{
+      width: min(860px, calc(100% - 24px));
+      margin: 18px auto;
+      padding: 26px;
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, var(--card), rgba(255,255,255,.03));
+      border: 1px solid var(--stroke);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .logo{
+      width: 240px;
+      margin: 6px auto 10px;
+      filter: drop-shadow(0 18px 38px rgba(0,0,0,.45));
+      display:block;
+    }
+
+    .logo-small{
       position: fixed;
-      bottom: 0;
+      top: 14px;
       left: 50%;
       transform: translateX(-50%);
-      border-radius: 8px;
+      width: 170px;
+      display: none;
+      z-index: 5;
+      filter: drop-shadow(0 16px 30px rgba(0,0,0,.55));
     }
-    .footer-ad img {
-      width: 60%;
-      height: 60%;
-      object-fit: fixed;
+
+    h1{
+      margin: 8px 0 10px;
+      color: var(--text);
+      letter-spacing: .2px;
+      line-height: 1.15;
+      font-size: clamp(22px, 2.2vw, 30px);
     }
+    .subtitle{
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 16px;
+      align-items:start;
+    }
+
+    @media (max-width: 900px){
+      .grid{ grid-template-columns: 1fr; }
+      .logo{ width: 210px; }
+      .logo-small{ width: 155px; }
+      .card{ padding: 20px; }
+    }
+
+    input, textarea{
+      width: 100%;
+      padding: 14px 14px;
+      margin: 10px 0 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(10,10,18,.55);
+      color: var(--text);
+      outline: none;
+      font-size: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.18);
+      transition: border-color .18s ease, box-shadow .18s ease;
+    }
+
+    textarea{
+      min-height: 190px;
+      resize: vertical;
+    }
+
+    input::placeholder, textarea::placeholder{
+      color: rgba(233,233,245,.55);
+    }
+
+    input:focus, textarea:focus{
+      border-color: rgba(255, 255, 255, 0.6);
+      box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.18), 0 14px 40px rgba(0,0,0,.25);
+    }
+
+    .row{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items:center;
+      justify-content:center;
+      margin-top: 10px;
+    }
+
+    .btn{
+      padding: 12px 14px;
+      font-size: 15px;
+      font-weight: 800;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      color: #0b0b12;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow:
+        0 14px 40px rgba(204,0,255,.25),
+        0 0 0 1px rgba(255,255,255,.12) inset;
+      transition: transform .12s ease, filter .12s ease, box-shadow .12s ease;
+      flex: 1;
+      min-width: 160px;
+    }
+
+    .btn:hover{ transform: translateY(-1px); filter: brightness(1.05); }
+    .btn:active{ transform: translateY(0) scale(.99); }
+
+    .btn.secondary{
+      color: var(--text);
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: 0 14px 40px rgba(0,0,0,.25);
+    }
+    .btn.secondary:hover{ filter: brightness(1.08); }
+
+    .btn.danger{
+      color: #0b0b12;
+      background: linear-gradient(135deg, #ff4d4d, #ffb020);
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      font-weight: 700;
+      font-size: 13px;
+      user-select:none;
+    }
+
+    .pill input{
+      width:auto;
+      margin:0;
+      padding:0;
+      box-shadow:none;
+      transform: translateY(1px);
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    @media (max-width: 520px){
+      .stats{ grid-template-columns: 1fr; }
+    }
+
+    .stat{
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      text-align:left;
+    }
+    .stat .k{ color: var(--muted); font-size: 12px; }
+    .stat .v{ font-weight: 900; margin-top: 4px; font-size: 16px; }
+
+    /* Suspense / Roleta */
+    #suspense-container{
+      display:none;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      gap: 10px;
+      animation: fadeInUp .25s ease both;
+    }
+
+    #contador{
+      font-size: clamp(18px, 2.4vw, 28px);
+      color: var(--muted);
+      font-weight: 900;
+      margin: 0;
+    }
+    .container{ padding-top: 90px; }
+
+    .roulette{
+      width: 100%;
+      max-width: 520px;
+      margin: 8px auto 0;
+      padding: 16px 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(204,0,255,.24);
+      background: linear-gradient(180deg, rgba(204,0,255,.12), rgba(255,255,255,.03));
+      box-shadow: 0 18px 60px rgba(0,0,0,.35);
+      position: relative;
+      overflow:hidden;
+    }
+
+    .roulette::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background: radial-gradient(500px 180px at 50% 50%, rgba(255,255,255,.10), transparent 70%);
+      pointer-events:none;
+    }
+
+    .roulette-name{
+      position: relative;
+      font-size: clamp(20px, 2.6vw, 34px);
+      font-weight: 1000;
+      letter-spacing: .4px;
+      color: #fff;
+      text-shadow: 0 14px 40px rgba(0,0,0,.55);
+      padding: 6px 0;
+      min-height: 48px;
+    }
+
+    .hint{
+      color: rgba(233,233,245,.7);
+      font-size: 13px;
+      margin: 0;
+    }
+
+    /* Winner */
+    #winner-container{
+      display:none;
+      animation: fadeInUp .25s ease both;
+    }
+
+    .winner{
+      margin: 14px auto 6px;
+      font-size: clamp(18px, 2.3vw, 26px);
+      font-weight: 1000;
+      color: #fff;
+      padding: 16px 16px;
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(34,197,94,.14), rgba(255,255,255,.03));
+      border: 1px solid rgba(34,197,94,.22);
+      box-shadow: 0 16px 50px rgba(0,0,0,.35);
+      white-space: pre-line;
+      max-width: 720px;
+    }
+
+    .mini{
+      color: var(--muted);
+      font-size: 13px;
+      margin: 0 0 8px;
+    }
+
+    /* Histórico */
+    .history{
+      text-align:left;
+      margin-top: 12px;
+      border-top: 1px solid rgba(255,255,255,.10);
+      padding-top: 12px;
+    }
+    .history h3{
+      margin: 8px 0 10px;
+      font-size: 16px;
+      color: var(--text);
+    }
+    .history-list{
+      display:flex;
+      flex-direction:column;
+      gap: 8px;
+      max-height: 220px;
+      overflow:auto;
+      padding-right: 6px;
+    }
+    .history-item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+    }
+    .history-item .left{
+      display:flex;
+      flex-direction:column;
+      gap: 3px;
+    }
+    .history-item .name{
+      font-weight: 950;
+      color: #fff;
+    }
+    .history-item .meta{
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .badge{
+      font-size: 12px;
+      font-weight: 900;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      white-space:nowrap;
+    }
+
+    /* Ads laterais (opcional) */
+    .side-decor{
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 160px;
+      height: auto;
+      z-index: 1;
+      opacity: .6;
+      filter: grayscale(.15) contrast(1.05);
+      transition: opacity .2s ease, transform .2s ease, filter .2s ease;
+    }
+    .side-decor:hover{
+      opacity: .9;
+      filter: none;
+      transform: translateY(-50%) scale(1.02);
+    }
+    .side-left{ left: 12px; }
+    .side-right{ right: 12px; }
+    @media (max-width: 900px){
+      .side-decor{ display:none; }
+    }
+
+    /* Footer */
+    .footer-ad{
+      background: rgba(0,0,0,.18);
+      border: 1px solid rgba(255,255,255,.10);
+      box-shadow: 0 14px 50px rgba(0,0,0,.45);
+      padding: 10px 10px;
+      width: min(860px, calc(100% - 22px));
+      position: fixed;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 16px;
+      z-index: 2;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .footer-ad img{
+      width: 100%;
+      height: 96px;
+      object-fit: cover;
+      border-radius: 12px;
+      display:block;
+    }
+
+    .toast{
+      position: fixed;
+      bottom: 120px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: rgba(0,0,0,.55);
+      border: 1px solid rgba(255,255,255,.12);
+      color: var(--text);
+      z-index: 10;
+      display:none;
+      box-shadow: 0 16px 50px rgba(0,0,0,.45);
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    @keyframes auroraMove{
+  from { transform: translate3d(-1.8%, -1.2%, 0) scale(1.02); }
+  to   { transform: translate3d( 2.2%,  1.6%, 0) scale(1.07); }
+    }
+    #main-container{
+  margin-bottom: clamp(140px, 18vh, 260px);
+}
   </style>
+  
 </head>
+
 <body>
-  <a href="https://www.kaspersky.com.br/free-antivirus" target="_blank"><img class="side-decor side-left" src="https://cdn.flashtalking.com/155971/4972456/FY24Q4_CC_Individual_CCIAllApps_BR_PT_PlasticHoodie-IP-Percentage_ST_160x600_NA_NA.jpg?923615054" alt="Lateral Esquerda"></a>
-  <a href="https://www.kaspersky.com.br/free-antivirus" target="_blank"><img class="side-decor side-right" src="https://cdn.flashtalking.com/155971/4972456/FY24Q4_CC_Individual_CCIAllApps_BR_PT_PlasticHoodie-IP-Percentage_ST_160x600_NA_NA.jpg?923615054" alt="Lateral Direita"></a>
+  <!-- ADS laterais (mantive do seu exemplo; pode remover se quiser) -->
+  <a href="https://www.kaspersky.com.br/free-antivirus" target="_blank" rel="noreferrer">
+    <img class="side-decor side-left"
+      src="https://cdn.flashtalking.com/155971/4972456/FY24Q4_CC_Individual_CCIAllApps_BR_PT_PlasticHoodie-IP-Percentage_ST_160x600_NA_NA.jpg?923615054"
+      alt="Lateral Esquerda">
+  </a>
+  <a href="https://www.kaspersky.com.br/free-antivirus" target="_blank" rel="noreferrer">
+    <img class="side-decor side-right"
+      src="https://cdn.flashtalking.com/155971/4972456/FY24Q4_CC_Individual_CCIAllApps_BR_PT_PlasticHoodie-IP-Percentage_ST_160x600_NA_NA.jpg?923615054"
+      alt="Lateral Direita">
+  </a>
 
   <img class="logo-small" id="logo-small" src="https://i.imgur.com/TJNyfWN.png" alt="Logo Sorteio Pequena">
 
-  <div class="container" id="main-container">
-    <img class="logo" src="https://i.imgur.com/TJNyfWN.png" alt="Logo Sorteio">
-    <h1>Sorteio de Nomes Aleatório<br><span style='font-size: 16px; color: #000000;'>Escolha um vencedor a partir de uma lista de participantes</span></h1>
-    <input type="text" id="titulo" placeholder="Digite o título do sorteio">
-    <textarea id="nomes" rows="6" placeholder="Insira os nomes, um por linha..."></textarea>
-    <button onclick="iniciarContagem()">Iniciar Sorteio</button>
+  <div class="container">
+
+    <!-- TELA PRINCIPAL -->
+     
+    <div class="card" id="main-container">
+      
+      
+      <img class="logo" src="https://i.imgur.com/TJNyfWN.png" alt="Logo Sorteio">
+
+      <h1>Sorteio de Nomes Aleatório</h1>
+      <p class="subtitle">Cole os participantes (1 por linha) e faça o sorteio com suspense estilo roleta.</p>
+
+      <div class="grid">
+        <div>
+          <input type="text" id="titulo" placeholder="Digite o título do sorteio (opcional)">
+          <textarea id="nomes" rows="8" placeholder="Insira os nomes, um por linha..."></textarea>
+
+          <div class="row">
+            <button class="btn" id="btn-iniciar" onclick="iniciarContagem()">Iniciar Sorteio</button>
+            <button class="btn secondary" onclick="preencherExemplo()">Exemplo</button>
+          </div>
+
+          <div class="row" style="margin-top: 12px;">
+            <label class="pill">
+              <input type="checkbox" id="chk-sem-repetir" checked />
+              Não repetir vencedor (remove da lista)
+            </label>
+            <label class="pill">
+              <input type="checkbox" id="chk-remover-duplicados" checked />
+              Remover nomes duplicados
+            </label>
+          </div>
+
+          <p class="mini" id="msg-validacao" style="margin-top:10px;"></p>
+        </div>
+
+        <div>
+          <div class="stats">
+            <div class="stat">
+              <div class="k">Participantes válidos</div>
+              <div class="v" id="stat-participantes">0</div>
+            </div>
+            <div class="stat">
+              <div class="k">Vencedores no histórico</div>
+              <div class="v" id="stat-historico">0</div>
+            </div>
+          </div>
+
+          <div class="history">
+            <h3>Histórico</h3>
+            <div class="history-list" id="history-list">
+              <div class="history-item">
+                <div class="left">
+                  <div class="name">—</div>
+                  <div class="meta">Ainda não teve sorteio</div>
+                </div>
+                <span class="badge">0</span>
+              </div>
+            </div>
+
+            <div class="row" style="margin-top: 12px;">
+              <button class="btn danger" onclick="resetarTudo()">Resetar tudo</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+<div class="card" id="faq-card">
+  <h2 class="faq-title">Perguntas frequentes</h2>
+
+  <div class="faq">
+    <button class="faq-q" type="button" aria-expanded="false">
+      <span>1. O sorteio de nomes é grátis?</span>
+      <span class="faq-icon">+</span>
+    </button>
+    <div class="faq-a">
+      <p>Sim! Nosso sorteio é totalmente gratuito.</p>
+    </div>
   </div>
 
-  <div class="container" id="suspense-container" style="display:none;">
-    <p id="contador">Sorteando...</p>
+  <div class="faq">
+    <button class="faq-q" type="button" aria-expanded="false">
+      <span>2. Como funciona o sorteio de nomes?</span>
+      <span class="faq-icon">+</span>
+    </button>
+    <div class="faq-a">
+      <p>
+        Você insere os participantes e o sistema realiza o sorteio de forma automática.
+        Em seguida, exibimos a roleta com suspense e revelamos o vencedor.
+      </p>
+    </div>
   </div>
 
-  <div class="container" id="winner-container" style="display:none;">
-    <h1>🎉 Parabéns ao Vencedor! 🎉</h1>
-    <p class="winner" id="winner-text"></p>
+  <div class="faq">
+    <button class="faq-q" type="button" aria-expanded="false">
+      <span>3. Como fazer um sorteio de nomes?</span>
+      <span class="faq-icon">+</span>
+    </button>
+    <div class="faq-a">
+      <ol>
+        <li>Adicione os nomes (um por linha).</li>
+        <li>Defina um título (opcional).</li>
+        <li>Clique em <strong>Iniciar Sorteio</strong> e aguarde o resultado.</li>
+      </ol>
+    </div>
   </div>
 
-  <div class="footer-ad">
-    <a href="https://www.hyundai.com.br/ofertas.html?form=cotacao&offer=D3F65BB4&utm_source=Google&utm_medium=SEARCH&utm_campaign=ONGOING_RETAIL_NEWCRETA_2024_LEADS&utm_content=TEXT_CRETA_LIMITED_GENE_GENE_GENE_HYHOME_OF&gad_source=1&gclid=CjwKCAiApY-7BhBjEiwAQMrrETjqwfZcI4gl4gpcTSF72RcDjoTK6L1q78AmS1khzfL3LdGeqLgvBBoCEH0QAvD_BwE" target="_blank">
-      <img src="https://bserejo.wordpress.com/wp-content/uploads/2011/02/rodape.jpg" alt="Propaganda Rodapé">
-    </a>
-  </div>  
+  <div class="faq">
+    <button class="faq-q" type="button" aria-expanded="false">
+      <span>4. O sorteio é aleatório?</span>
+      <span class="faq-icon">+</span>
+    </button>
+    <div class="faq-a">
+      <p>Sim. O vencedor é escolhido automaticamente pelo sistema.</p>
+    </div>
+  </div>
+</div>
+
+    <!-- TELA SUSPENSE -->
+    <div class="card" id="suspense-container">
+      <p id="contador">Preparando sorteio…</p>
+      <div class="roulette">
+        <div class="roulette-name" id="roulette-name">Sorteando…</div>
+        <p class="hint" id="roulette-hint">Nomes passando rápido antes de escolher o vencedor</p>
+      </div>
+      <div class="row" style="margin-top: 14px;">
+        <button class="btn secondary" onclick="cancelarSorteio()">Cancelar</button>
+      </div>
+    </div>
+
+    <!-- TELA VENCEDOR -->
+    <div class="card" id="winner-container">
+      <h1>🎉 Parabéns ao Vencedor! 🎉</h1>
+      <p class="winner" id="winner-text"></p>
+      <p class="mini" id="winner-meta"></p>
+
+      <div class="row" style="margin-top: 10px;">
+        <button class="btn" onclick="sortearNovamente()">Sortear novamente</button>
+        <button class="btn secondary" onclick="copiarVencedor()">Copiar vencedor</button>
+      </div>
+
+      <div class="row" style="margin-top: 10px;">
+        <button class="btn secondary" onclick="voltarInicio()">Voltar</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="toast" id="toast"></div>
 
   <script>
-    function iniciarContagem() {
-      document.getElementById('main-container').style.display = 'none';
-      document.getElementById('suspense-container').style.display = 'flex';
-      document.getElementById('logo-small').style.display = 'block';
+    // ======= CONFIG/STATE =======
+    const excluirNomesBase = ["Flavio", "Mari", "Fabio", "Tereza", "Ana Claudia"];
 
-      let tempo = 5;
-      const contador = document.getElementById('contador');
+    let history = [];          // {name, title, whenISO, index}
+    let lastWinner = null;     // string
+    let currentPool = [];      // lista atual válida (pós filtros)
+    let countdownTimer = null; // setInterval
+    let rouletteTimer = null;  // setInterval
+    let isRunning = false;
 
-      const intervalo = setInterval(() => {
-        if (tempo > 0) {
-          contador.textContent = `Sorteio ira começar em ${tempo}...`;
-          tempo--;
+    // ======= HELPERS =======
+    function $(id){ return document.getElementById(id); }
+
+    function toast(msg){
+      const el = $("toast");
+      el.textContent = msg;
+      el.style.display = "block";
+      clearTimeout(el._t);
+      el._t = setTimeout(() => el.style.display = "none", 1600);
+    }
+
+    function normalizarNome(nome) {
+      return nome
+        .trim()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function parseNomes(){
+      const input = $("nomes").value || "";
+      const removerDuplicados = $("chk-remover-duplicados").checked;
+
+      const excluirSet = new Set(excluirNomesBase.map(normalizarNome));
+
+      let arr = input
+        .split("\n")
+        .map(n => n.trim())
+        .filter(n => n !== "")
+        .filter(n => !excluirSet.has(normalizarNome(n)));
+
+      if (removerDuplicados){
+        const seen = new Set();
+        arr = arr.filter(n => {
+          const k = normalizarNome(n);
+          if (seen.has(k)) return false;
+          seen.add(k);
+          return true;
+        });
+      }
+
+      return arr;
+    }
+
+   function atualizarStats(){
+  const pool = parseNomes(); // pool REAL (bloqueados removidos)
+
+  // total digitado (inclui bloqueados)
+  const totalDigitado = ($("nomes").value || "")
+    .split("\n")
+    .map(n => n.trim())
+    .filter(n => n !== "").length;
+
+  // Mostra no painel o TOTAL digitado (pra não entregar que tem bloqueio)
+  $("stat-participantes").textContent = totalDigitado > 0 ? totalDigitado : "—";
+  $("stat-historico").textContent = history.length;
+
+  const msg = $("msg-validacao");
+
+  // Mensagens neutras (não fala "válido/inválido")
+  if (totalDigitado === 0){
+    msg.textContent = "Cole os nomes (1 por linha) para começar.";
+    msg.style.color = "rgba(233,233,245,.75)";
+    return;
+  }
+
+  // Se o pool real ficou pequeno por causa de bloqueados, não “entrega”
+  if (pool.length === 0){
+    msg.textContent = "Não foi possível iniciar agora. Adicione mais participantes.";
+    msg.style.color = "rgba(245,158,11,.9)";
+    return;
+  }
+
+  if (pool.length < 2){
+    msg.textContent = "Adicione mais participantes para iniciar o sorteio.";
+    msg.style.color = "rgba(245,158,11,.9)";
+  } else {
+    msg.textContent = "Tudo pronto. Você já pode iniciar o sorteio.";
+    msg.style.color = "rgba(34,197,94,.85)";
+  }
+}
+
+    function renderHistorico(){
+      const list = $("history-list");
+      list.innerHTML = "";
+
+      if (history.length === 0){
+        list.innerHTML = `
+          <div class="history-item">
+            <div class="left">
+              <div class="name">—</div>
+              <div class="meta">Ainda não teve sorteio</div>
+            </div>
+            <span class="badge">0</span>
+          </div>`;
+        return;
+      }
+
+      // mais recente primeiro
+      const reversed = [...history].reverse();
+      reversed.forEach((h, idx) => {
+        const d = new Date(h.whenISO);
+        const when = d.toLocaleString("pt-BR");
+        const badge = history.length - idx;
+
+        const div = document.createElement("div");
+        div.className = "history-item";
+        div.innerHTML = `
+          <div class="left">
+            <div class="name">${escapeHtml(h.name)}</div>
+            <div class="meta">${escapeHtml(h.title || "Sem título")} • ${when}</div>
+          </div>
+          <span class="badge">#${badge}</span>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function showMain(){
+  $("main-container").style.display = "block";
+  $("suspense-container").style.display = "none";
+  $("winner-container").style.display = "none";
+  $("logo-small").style.display = "none";
+
+  // MOSTRA FAQ no início
+  const faq = document.getElementById("faq-card");
+  if (faq) faq.style.display = "block";
+}
+
+function showSuspense(){
+  $("main-container").style.display = "none";
+  $("suspense-container").style.display = "flex";
+  $("winner-container").style.display = "none";
+  $("logo-small").style.display = "block";
+
+  // ESCONDE FAQ durante sorteio
+  const faq = document.getElementById("faq-card");
+  if (faq) faq.style.display = "none";
+}
+
+function showWinner(){
+  $("main-container").style.display = "none";
+  $("suspense-container").style.display = "none";
+  $("winner-container").style.display = "block";
+  $("logo-small").style.display = "block";
+
+  // ESCONDE FAQ no vencedor também
+  const faq = document.getElementById("faq-card");
+  if (faq) faq.style.display = "none";
+}
+    
+    function parseNomesVisuais(){
+  const input = $("nomes").value || "";
+  const removerDuplicados = $("chk-remover-duplicados").checked;
+
+  let arr = input
+    .split("\n")
+    .map(n => n.trim())
+    .filter(n => n !== "");
+
+  if (removerDuplicados){
+    const seen = new Set();
+    arr = arr.filter(n => {
+      const k = normalizarNome(n);
+      if (seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    });
+  }
+
+  return arr; // inclui bloqueados
+}
+
+    function iniciarConfettiPorTempo(duracaoMs = 1500) {
+      const fim = Date.now() + duracaoMs;
+
+      (function frame() {
+        confetti({
+          particleCount: 10,
+          spread: 50,
+          origin: { x: Math.random(), y: Math.random() * 0.6 }
+        });
+        if (Date.now() < fim) requestAnimationFrame(frame);
+      })();
+    }
+
+    // ======= FLOW =======
+    function iniciarContagem(){
+      if (isRunning) return;
+
+      currentPool = parseNomes();
+
+      if (currentPool.length === 0){
+        toast("Nenhum nome válido na lista.");
+        atualizarStats();
+        return;
+      }
+
+      isRunning = true;
+      showSuspense();
+
+      // Countdown 3..2..1
+      let tempo = 3;
+      $("contador").textContent = `Sorteio vai começar em ${tempo}...`;
+      $("roulette-name").textContent = "Preparando…";
+
+      clearInterval(countdownTimer);
+      countdownTimer = setInterval(() => {
+        tempo--;
+        if (tempo > 0){
+          $("contador").textContent = `Sorteio vai começar em ${tempo}...`;
         } else {
-          clearInterval(intervalo);
-          sortearNome();
+          clearInterval(countdownTimer);
+          iniciarRoletaESortear();
         }
       }, 1000);
     }
 
-    function sortearNome() {
-      document.getElementById('suspense-container').style.display = 'none';
-      document.getElementById('winner-container').style.display = 'flex';
+  function iniciarRoletaESortear(){
+  if (!isRunning) return;
 
-      const inputNomes = document.getElementById('nomes').value;
-      const excluirNomes = ["Flavio", "Mari", "Amanda", "Tereza", "Ana Claudia", "Glaucia",];
-      const nomesArray = inputNomes.split('\n').filter(nome => nome.trim() !== '' && !excluirNomes.includes(nome.trim()));
+  const poolVisual = (window._poolVisual && window._poolVisual.length)
+    ? window._poolVisual
+    : parseNomesVisuais(); // inclui bloqueados
 
-      if (nomesArray.length > 0) {
-        const nomeSorteado = nomesArray[Math.floor(Math.random() * nomesArray.length)];
-        document.getElementById('winner-text').textContent = `O grande vencedor é: ${nomeSorteado}! 🎉`;
-        iniciarConfetti();
-      } else {
-        document.getElementById('winner-text').textContent = 'Nenhum nome válido foi inserido!';
+  const poolElegivel = (currentPool && currentPool.length)
+    ? currentPool
+    : parseNomes(); // exclui bloqueados
+
+  if (poolVisual.length === 0){
+    cancelarSorteio();
+    return;
+  }
+
+  if (poolElegivel.length === 0){
+    toast("Não foi possível concluir. Adicione mais participantes.");
+    cancelarSorteio();
+    return;
+  }
+
+  // vencedor REAL (nunca bloqueado)
+  const vencedor = poolElegivel[Math.floor(Math.random() * poolElegivel.length)];
+
+  $("contador").textContent = "Sorteando…";
+  $("roulette-hint").textContent = "A roleta vai desacelerando até parar no vencedor";
+
+  let i = 0;
+  let velocidade = 40;
+  const maxVel = 240;
+
+  const passos = 26 + Math.floor(Math.random() * 18);
+  const puxarNoFinal = 6; // últimos passos: força o vencedor aparecer
+  let step = 0;
+
+  clearInterval(rouletteTimer);
+
+  function tick(){
+    if (!isRunning) return;
+
+    step++;
+
+    let nomeMostrado;
+    if (step >= passos - puxarNoFinal){
+      // força parar no vencedor
+      nomeMostrado = vencedor;
+    } else {
+      // roleta normal (inclui bloqueados)
+      nomeMostrado = poolVisual[i % poolVisual.length];
+      i++;
+    }
+
+    $("roulette-name").textContent = nomeMostrado;
+
+    // desacelera
+    if (step % 3 === 0){
+      velocidade = Math.min(maxVel, Math.floor(velocidade * 1.18));
+    }
+
+    clearInterval(rouletteTimer);
+    rouletteTimer = setInterval(tick, velocidade);
+
+    if (step >= passos){
+      clearInterval(rouletteTimer);
+      finalizarSorteio(vencedor); // garante que vencedor é elegível
+    }
+  }
+
+  rouletteTimer = setInterval(tick, velocidade);
+}
+
+    function finalizarSorteio(nomeVencedor){
+      if (!isRunning) return;
+
+      lastWinner = nomeVencedor;
+
+      // opcional: remover vencedor da lista (não repetir)
+      const semRepetir = $("chk-sem-repetir").checked;
+      if (semRepetir){
+        // remove do textarea (base real)
+        removerNomeDoTextarea(nomeVencedor);
+      }
+
+      const titulo = $("titulo").value.trim();
+      const nowISO = new Date().toISOString();
+      history.push({ name: nomeVencedor, title: titulo, whenISO: nowISO, index: history.length + 1 });
+
+      renderHistorico();
+      atualizarStats();
+
+      // Winner screen
+      const winnerText = $("winner-text");
+      const winnerMeta = $("winner-meta");
+
+      winnerText.textContent =
+        `${titulo ? `🏆 ${titulo}\n\n` : ""}O grande vencedor é: ${nomeVencedor}! 🎉`;
+
+      winnerMeta.textContent =
+        `Participantes restantes: ${parseNomes().length}${$("chk-sem-repetir").checked ? " (vencedor removido da lista)" : ""}`;
+
+      showWinner();
+      iniciarConfettiPorTempo(3000);
+
+      isRunning = false;
+    }
+
+    function removerNomeDoTextarea(nome){
+      // remove uma linha igual (comparação normalizada)
+      const target = normalizarNome(nome);
+      const linhas = ($("nomes").value || "").split("\n");
+      const novas = [];
+      let removido = false;
+
+      for (const ln of linhas){
+        const t = ln.trim();
+        if (!removido && t !== "" && normalizarNome(t) === target){
+          removido = true;
+          continue;
+        }
+        novas.push(ln);
+      }
+      $("nomes").value = novas.join("\n");
+    }
+
+    function cancelarSorteio(){
+      if (!isRunning){
+        showMain();
+        return;
+      }
+      clearInterval(countdownTimer);
+      clearInterval(rouletteTimer);
+      isRunning = false;
+      showMain();
+      toast("Sorteio cancelado.");
+    }
+
+    function sortearNovamente(){
+      // sem repetir: já removeu o vencedor, então só roda de novo
+      showMain();
+      iniciarContagem();
+    }
+
+    function voltarInicio(){
+      showMain();
+    }
+
+    async function copiarVencedor(){
+      if (!lastWinner){
+        toast("Ainda não tem vencedor.");
+        return;
+      }
+      try{
+        await navigator.clipboard.writeText(lastWinner);
+        toast("Vencedor copiado!");
+      } catch(e){
+        toast("Não deu pra copiar (permissão do navegador).");
       }
     }
 
-    function iniciarConfetti() {
-      setInterval(() => {
-        confetti({
-          particleCount: 50,
-          spread: 120,
-          origin: { x: Math.random(), y: Math.random() - 0.2 }
-        });
-      }, 200);
+
+    function resetarTudo(){
+      clearInterval(countdownTimer);
+      clearInterval(rouletteTimer);
+      isRunning = false;
+
+      history = [];
+      lastWinner = null;
+      $("titulo").value = "";
+      $("nomes").value = "";
+      renderHistorico();
+      atualizarStats();
+      showMain();
+      toast("Tudo resetado.");
     }
+
+    function preencherExemplo(){
+      $("titulo").value = "Sorteio do Brinde";
+      $("nomes").value = [
+        "João",
+        "Maria",
+        "Pedro",
+        "Ana",
+        "Carlos",
+        "Bianca",
+        "Rafael",
+        "Fernanda",
+        "Lucas",
+        "Juliana"
+      ].join("\n");
+      atualizarStats();
+      toast("Exemplo preenchido.");
+    }
+
+    // ======= LIVE UPDATES =======
+    ["nomes","titulo","chk-sem-repetir","chk-remover-duplicados"].forEach(id => {
+      $(id).addEventListener("input", atualizarStats);
+      $(id).addEventListener("change", atualizarStats);
+    });
+
+    // init
+    renderHistorico();
+    atualizarStats();
+
+    // ===== FAQ Acordeão =====
+document.querySelectorAll(".faq-q").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const box = btn.closest(".faq");
+    const isOpen = box.classList.contains("open");
+
+    // fecha todos (opcional, fica mais limpo)
+    document.querySelectorAll(".faq.open").forEach(f => {
+      f.classList.remove("open");
+      f.querySelector(".faq-q").setAttribute("aria-expanded", "false");
+    });
+
+    // abre o clicado
+    if (!isOpen){
+      box.classList.add("open");
+      btn.setAttribute("aria-expanded", "true");
+    }
+  });
+});
   </script>
 </body>
 </html>
