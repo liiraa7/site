@@ -1,3 +1,21 @@
-Site que fiz pro sorteio da empresa que trabalho, nao trabalho muito com front, foi somente pra aprender um pouco, peguei partes das internet e fui mexendo no codigo!!!
-Codigo Atualizado, agora implementei CSS, E ADICIONEI novas funções no site, visualmente está mais bonito, e com mais funcionalides
-Site foi usado pra varios sorteios dentro da empresa.
+# Sistema de Sorteio
+
+Aplicação desenvolvida para utilização interna na empresa, permitindo realizar sorteios de participantes de forma simples e intuitiva.
+
+## Tecnologias
+
+- HTML5
+- CSS3
+- JavaScript
+
+## Funcionalidades
+
+- Sorteio aleatório
+- Histórico de sorteios
+- Interface responsiva
+- Efeitos visuais
+- FAQ integrado
+
+## Objetivo
+
+Projeto desenvolvido para praticar desenvolvimento web e atender uma necessidade interna da empresa.
